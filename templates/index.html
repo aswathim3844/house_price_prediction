@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav ul li a:hover {
+            color: #3498db;
+        }
+
+        /* Page Styles */
+        .page {
+            display: none;
+            min-height: calc(100vh - 140px);
+            padding: 2rem 0;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Intro Page Styles */
+        .hero {
+            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.9)), url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background 0.3s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature i {
+            font-size: 2.5rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+
+        .feature h3 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        /* Form Page Styles */
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title p {
+            color: #7f8c8d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .prediction-form {
+            background: white;
+            border-radius: 8px;
+            padding: 2.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+
+        .form-col {
+            flex: 1;
+            padding: 0 10px;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+
+        .result h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        /* Footer Styles */
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                margin-top: 1rem;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .form-col {
+                flex: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">HousePricePredictor</div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="nav-link" data-page="intro">Home</a></li>
+                        <li><a href="#" class="nav-link" data-page="predict">Predict</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Intro Page -->
+    <section id="intro-page" class="page active">
+        <div class="container">
+            <div class="hero">
+                <h1>Predict House Prices with Machine Learning</h1>
+                <p>Our advanced ML model analyzes various property factors to provide accurate house price predictions. Get an instant estimate for any property.</p>
+                <a href="#" class="btn nav-link" data-page="predict">Get Started</a>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <i>📊</i>
+                    <h3>Accurate Predictions</h3>
+                    <p>Our model uses advanced algorithms to provide reliable house price estimates based on key property features.</p>
+                </div>
+                <div class="feature">
+                    <i>⚡</i>
+                    <h3>Instant Results</h3>
+                    <p>Get price predictions in seconds by simply entering your property details in our easy-to-use form.</p>
+                </div>
+                <div class="feature">
+                    <i>🏠</i>
+                    <h3>Property Insights</h3>
+                    <p>Understand how different factors like grade, area, and rooms impact your property's value.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prediction Page -->
+    <section id="predict-page" class="page">
+        <div class="container">
+            <div class="section-title">
+                <h2>House Price Prediction</h2>
+                <p>Fill in the details below to get an accurate price prediction for your property</p>
+            </div>
+
+            <div class="prediction-form">
+                <form id="pricePredictionForm">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="overallGrade">Overall Grade</label>
+                                <select id="overallGrade" name="overallGrade" required>
+                                    <option value="" disabled selected>Select Grade</option>
+                                    <option value="3">3 - Below Average</option>
+                                    <option value="4">4 - Average</option>
+                                    <option value="5">5 - Fair</option>
+                                    <option value="6">6 - Above Average</option>
+                                    <option value="7">7 - Good</option>
+                                    <option value="8">8 - Very Good</option>
+                                    <option value="9">9 - Excellent</option>
+                                    <option value="10">10 - Luxury</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="livingArea">Living Area after Renovation (in Sqft)</label>
+                                <input type="number" id="livingArea" name="livingArea" required min="500" max="10000" placeholder="e.g., 1500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="bathrooms">No of Bathrooms</label>
+                                <input type="number" id="bathrooms" name="bathrooms" required min="1" max="8" placeholder="e.g., 2">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="bedrooms">No of Bedrooms</label>
+                                <input type="number" id="bedrooms" name="bedrooms" required min="1" max="10" placeholder="e.g., 3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="floors">No of Floors</label>
+                        <select id="floors" name="floors" required>
+                            <option value="" disabled selected>Select No of Floors</option>
+                            <option value="1">1</option>
+                            <option value="1.5">1.5</option>
+                            <option value="2">2</option>
+                            <option value="2.5">2.5</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn" style="width: 100%;">Predict Price</button>
+                </form>
+
+                <div class="result" id="predictionResult">
+                    <h3>Estimated House Price</h3>
+                    <div class="price" id="predictedPrice">$0</div>
+                    <p>This is an estimate based on the provided information. Actual market price may vary.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>House Price Prediction Tool &copy; 2023 | Created with Machine Learning</p>
+            <p>Contact: info@housepricepredictor.com</p>
+        </div>
+    </footer>
+
+    <script>
+        // Page Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetPage = this.getAttribute('data-page');
+
+                // Hide all pages
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+
+                // Show target page
+                document.getElementById(`${targetPage}-page`).classList.add('active');
+
+                // Scroll to top
+                window.scrollTo(0, 0);
+            });
+        });
+
+        // Form Submission
+        document.getElementById('pricePredictionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // In a real implementation, this would send the form data to your Flask backend
+            // For demonstration, we'll simulate a prediction
+
+            // Get form values
+            const overallGrade = parseFloat(document.getElementById('overallGrade').value);
+            const livingArea = parseFloat(document.getElementById('livingArea').value);
+            const bathrooms = parseFloat(document.getElementById('bathrooms').value);
+            const bedrooms = parseFloat(document.getElementById('bedrooms').value);
+            const floors = parseFloat(document.getElementById('floors').value);
+
+            // Simulate a price calculation (replace with actual API call to your Flask backend)
+            const basePrice = livingArea * 150; // Base price per sq ft
+            const gradeMultiplier = 1 + (overallGrade - 5) * 0.1; // Grade impact
+            const bedroomBonus = bedrooms * 15000;
+            const bathroomBonus = bathrooms * 10000;
+            const floorBonus = floors * 20000;
+
+            const simulatedPrice = (basePrice + bedroomBonus + bathroomBonus + floorBonus) * gradeMultiplier;
+
+            // Format the price
+            const formattedPrice = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(simulatedPrice);
+
+            // Display the result
+            document.getElementById('predictedPrice').textContent = formattedPrice;
+            document.getElementById('predictionResult').style.display = 'block';
+
+            // Scroll to the result
+            document.getElementById('predictionResult').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
