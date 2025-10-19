@@ -1,3 +1,6 @@
 pandas
-seaborn
 pickle
+Flask
+numpy
+scikit-learn
+gunicorn
